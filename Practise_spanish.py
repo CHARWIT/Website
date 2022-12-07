@@ -22,7 +22,7 @@ window.option_add('*Font', '19')
 opdracht_label = ttk.Label(mainframe, text="Vertaal:").grid(column=1, row=1, sticky=W)
 
 woord_spaans = StringVar()
-woord_spaans = "Hola"
+woord_spaans = "hola"
 ttk.Label(mainframe, text=woord_spaans, font=font.Font(size=20)).grid(column=2, row=2, sticky=W)
 ttk.Label(mainframe, text=" -> ", font=font.Font(size=20)).grid(column=3, row=2, sticky=W)
 
@@ -34,11 +34,16 @@ vertaling_entry.focus()
 for child in mainframe.winfo_children():
     child.grid_configure(padx=5, pady=5)
 
-def functie(event):
-    uitkomst = StringVar()
-    uitkomst = "Goed!"
-    ttk.Label(mainframe, text=uitkomst, font=font.Font(size=20)).grid(column=4, row=3, sticky=W)
+show = ttk.Label(mainframe, font=font.Font(size=20))
+show.grid(column=4, row=3, sticky=W)
 
-window.bind("<Return>", functie)
+def functie(event):
+    global show
+    if vertaling.get() == "hallo":
+        show.config(text="Goed")
+    else:
+        show.config(text="fout")
+
+vertaling_entry.bind("<Return>", functie)
 
 window.mainloop()
