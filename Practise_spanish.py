@@ -1,10 +1,8 @@
-#Make a canvas
-
 from tkinter import *
 from tkinter import ttk
 from tkinter import font
 
-# highlightFont = font.Font(family='Helvetica', name='appHighlightFont', size=120, weight='bold')
+#highlightFont = font.Font(family='Helvetica', name='appHighlightFont', size=120, weight='bold')
 
 window = Tk()
 
@@ -36,10 +34,11 @@ vertaling_entry.focus()
 for child in mainframe.winfo_children():
     child.grid_configure(padx=5, pady=5)
 
-def functie():
-    print("goed!")
+def functie(event):
+    uitkomst = StringVar()
+    uitkomst = "Goed!"
+    ttk.Label(mainframe, text=uitkomst, font=font.Font(size=20)).grid(column=4, row=3, sticky=W)
 
 window.bind("<Return>", functie)
-
 
 window.mainloop()
