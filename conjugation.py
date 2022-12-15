@@ -1,55 +1,3 @@
-if True:
-    print('true')
-else:
-    print('false')
-
-"""
-from tkinter import *
-
-def toggle ():
-    global shown
-    if shown: l.grid_remove () # Hide the text
-    else: l.grid () # Show the text
-    shown = not shown # Reverse the 'shown' boolean value
-
-# Create the window with all the widgets contained within a frame
-root = Tk ()
-f = Frame (root)
-f.grid ()
-shown = False
-Button (f, text = "Toggle text", command = toggle).grid ()
-l = Label (f, text = "Your text")
-root.mainloop ()
-
-
-#Import the required libraries
-from tkinter import *
-from tkinter import ttk
-
-#Create an instance of Tkinter Frame
-win = Tk()
-
-#Set the geometry
-win.geometry("700x250")
-
-# Define a function to return the Input data
-def get_data():
-   label.config(text= entry.get(), font= ('Helvetica 13'))
-
-#Create an Entry Widget
-entry = Entry(win, width= 42)
-entry.place(relx= .5, rely= .5, anchor= CENTER)
-
-#Inititalize a Label widget
-label= Label(win, text="", font=('Helvetica 13'))
-label.pack()
-
-#Create a Button to get the input data
-ttk.Button(win, text= "Click to Show", command= get_data).place(relx= .7, rely= .5, anchor= CENTER)
-
-win.mainloop()
-"""
-
 import pandas as pd
 import random
 
@@ -127,3 +75,70 @@ class quiz_input():
                 return v[:-2] + 'ado'
             else:
                 return v[:-2] + 'ido'
+
+
+    def conjugacion(self, v, t, p):
+        #Create shadow v, t and p for conjugation of the imperativo (which is equal to conjugations in other tenses), gerundio and perfecto
+        v2 = v
+        t2 = t
+        p2 = p
+
+        #Imperativo in 2s will be conjugated as if it was presente 3s
+        if t == 'imperativo' and p == '2s':
+            t2 = 'presente'
+            p2 = '3s'
+        #Imperativo in 3s, 1m and 3m will be conjugated as if it was presente de subjuntivo, the same applies to the imperativo negativo
+        elif t == 'imperativo' and p in ['3s', '1m', '3m'] or t == 'imperativo_neg':
+            t2 = 'pres_subj'
+        #Set verbo to (presente of) estar in gerundio ...
+        elif t == 'gerundio':
+            v2 = 'estar'
+            t2 = 'presente'
+        #... or to (presente of) haber in perfecto
+        elif t == 'perfecto':
+            v2 = 'haber'
+            t2 = 'presente'
+
+        #Imperativo 2m is a special case without irregularities (inifintivo with last character replaced by 'd')
+        if t == 'imperativo' and p == '2m':
+            res = v2[:-1] + 'd'
+        #In other cases check for irregularity first
+        #For gerundio and perfecto in estar and haber (v2 and t2)
+        elif (t == 'gerundio' or t == 'perfecto') and self.irregularity_check(v2, t2, p):
+            res = self.get_irregularity(v2, t2, p)
+        #For the rest, based on (v2,) t and p because of tense and pronounce change in imperativo
+        elif self.irregularity_check(v2, t, p):
+            res = self.get_irregularity(v2, t, p)
+        #And if no irregularity exists, conjugation is: raiz + terminación (depending on term_inf)
+        else:
+            # The 'terminación' depends on the last two characters of the infinitivo (term_inf)
+            term_inf = v2[-2:]
+            raiz = self.derive_raiz(v2, t2)
+            res = raiz + self.get_terminacion(term_inf, t2, p2)
+
+        #In case of gerundio or perfecto: add gerundio or perfecto to conjugacion of either estar and haber
+        if t == 'gerundio':
+            res = res + ' ' + self.add_gerundio(v)
+
+        if t == 'perfecto':
+            res = res + ' ' + self.add_participio(v)
+
+        return res
+
+
+    def create_sel(self, n):
+        df = self.selection(n)
+        df['conjuga'] = df.apply(lambda x: self.conjugacion(x.verbo, x.tiempo, x.persona), axis=1)
+        return df
+
+
+def test():
+    q = quiz_input()
+    # c=q.conjugacion('ir', 'gerundio', '2m')
+    # print(c)
+
+    res = q.create_sel(10)
+    print(res)
+
+if __name__ == '__main__':
+    test()
