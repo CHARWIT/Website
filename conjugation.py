@@ -14,7 +14,7 @@ class quiz_input():
         self.tiempos = ['presente', 'gerundio', 'perfecto', 'imperfecto', 'indefinido', 'presente_subjuntivo', 'imperfecto_subjuntivo', 'futuro', 'condicional', 'imperativo', 'imperativo_negativo']
         self.personas = ['1s', '2s', '3s', '1m', '2m', '3m']
         #First person singular does not exist for imperativo
-        self.personas_imperativo = ['2s', '3s', '1m', '2m', '3m']
+        self.personas_imperativo = ['2s', '2m'] #['2s', '3s', '1m', '2m', '3m']
         self.personas_text = {'1s' : 'yo', '2s' : 'tu', '3s' : 'el/ella', '1m' : 'nosotros', '2m' : 'vosotros', '3m' : 'ellos/ellas'}
         #Create list of possible combinations of tenses and pronounces in which exist irregularities
         self.tiempos_personales_irregulares = list(self.tab_irregula['tiempo'] + self.tab_irregula['pers'].fillna(''))

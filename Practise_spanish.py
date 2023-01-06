@@ -66,17 +66,22 @@ class quiz(tk.Frame):
         ttk.Label(self.frame, text="").grid(row=self.noq+4, column=1, sticky='w')
         ttk.Button(self.frame, text='Start over', command=self.start_over).grid(row=self.noq+5, column=1, sticky='w')
         ttk.Button(self.frame, text='Quit', command=self.quit).grid(row=self.noq + 5, column=2, sticky='w')
+        ttk.Button(self.frame, text='Check', command=self.check_answers).grid(row=self.noq+5, column=3, sticky='w')
         self.answers[0].focus()
-        self.root_window.bind("<Return>", self.check_answers)
+        self.root_window.bind("<Return>", self.on_return)
 
 
-    def check_answers(self, event):
+    def on_return(self, event):
+        self.check_answers()
+
+
+    def check_answers(self):
         for i in range(self.noq):
             print(self.df_sel['conjuga'][i])
             if self.answers[i].get() == self.df_sel['conjuga'][i]:
                 ttk.Label(self.frame, text='Goed!').grid(column=4, row=i+3, sticky='we')
             else:
-                ttk.Label(self.frame, text='Fout').grid(column=4, row=i+3, sticky='we')
+                ttk.Label(self.frame, text='').grid(column=4, row=i+3, sticky='we')
 
 
     def start_over(self):
