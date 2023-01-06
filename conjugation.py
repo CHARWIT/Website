@@ -5,21 +5,24 @@ class quiz_input():
 
     def __init__(self):
         #Reading the base documents for the conjugations
+        #Meaning of possible abbreviations:
+        # pret = preterito, imp = imperfecto, indef = indefenido, pres = presente, subj = subjuntivo, neg = negativo
+        # s = singular, m = plural
         self.tab_verbos = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="verbos")
         self.tab_termina = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="terminación_estándar")
         self.tab_irregula = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="irregularidades")
-        #Meaning of the abbreviations: pret = preterito, imp = imperfecto, indef = indefenido, pres = presente, subj = subjuntivo, neg = negativo
-        self.tiempos = ['presente', 'gerundio', 'perfecto', 'pret_imp', 'pret_indef', 'pres_subj', 'imp_subj', 'futuro', 'condicional', 'imperativo', 'imperativo_neg']
+        self.tiempos = ['presente', 'gerundio', 'perfecto', 'imperfecto', 'indefinido', 'presente_subjuntivo', 'imperfecto_subjuntivo', 'futuro', 'condicional', 'imperativo', 'imperativo_negativo']
         self.personas = ['1s', '2s', '3s', '1m', '2m', '3m']
         #First person singular does not exist for imperativo
         self.personas_imperativo = ['2s', '3s', '1m', '2m', '3m']
+        self.personas_text = {'1s' : 'yo', '2s' : 'tu', '3s' : 'el/ella', '1m' : 'nosotros', '2m' : 'vosotros', '3m' : 'ellos/ellas'}
         #Create list of possible combinations of tenses and pronounces in which exist irregularities
         self.tiempos_personales_irregulares = list(self.tab_irregula['tiempo'] + self.tab_irregula['pers'].fillna(''))
 
 
     def selection(self, n):
         #Selection of n verb conjugations
-        verbo = random.choices(self.tab_verbos['verbos'].tolist(), k=n)
+        verbo = random.choices(self.tab_verbos['verbo'].tolist(), k=n)
         tiempo = random.choices(self.tiempos, k=n)
         selection = pd.DataFrame({'verbo': verbo, 'tiempo': tiempo})
         #choose the right pronounce for the tenses (first person singular does not exist for imperativo)
@@ -30,9 +33,9 @@ class quiz_input():
     def derive_raiz(self, v, t):
         if (t == 'futuro') | (t == 'condicional'):
             raiz = self.get_irregularity(v, 'raiz_futuro', '') if self.irregularity_check(v, 'raiz_futuro', '') else v
-        elif t == "pres_subj":
+        elif t == "presente_subjuntivo":
             raiz = self.get_irregularity(v, 'raiz_pres_subj', '') if self.irregularity_check(v, 'raiz_pres_subj', '') else v[:-2]
-        elif t == "imp_subj":
+        elif t == "imperfecto_subjuntivo":
             raiz = self.get_irregularity(v, 'raiz_imp_subj', '') if self.irregularity_check(v, 'raiz_imp_subj', '') else v[:-2]
         else:
             raiz = v[:-2]
@@ -88,8 +91,8 @@ class quiz_input():
             t2 = 'presente'
             p2 = '3s'
         #Imperativo in 3s, 1m and 3m will be conjugated as if it was presente de subjuntivo, the same applies to the imperativo negativo
-        elif t == 'imperativo' and p in ['3s', '1m', '3m'] or t == 'imperativo_neg':
-            t2 = 'pres_subj'
+        elif t == 'imperativo' and p in ['3s', '1m', '3m'] or t == 'imperativo_negativo':
+            t2 = 'presente_subjuntivo'
         #Set verbo to (presente of) estar in gerundio ...
         elif t == 'gerundio':
             v2 = 'estar'
@@ -128,7 +131,9 @@ class quiz_input():
 
     def create_sel(self, n):
         df = self.selection(n)
+        df['traducción'] = df['verbo'].apply(lambda x: self.tab_verbos.loc[self.tab_verbos['verbo'] == x, 'traducción'].item())
         df['conjuga'] = df.apply(lambda x: self.conjugacion(x.verbo, x.tiempo, x.persona), axis=1)
+        df['persona_text'] = df['persona'].apply(lambda x: self.personas_text[x])
         return df
 
 

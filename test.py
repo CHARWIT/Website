@@ -1,7 +1,37 @@
-if True:
-    print('true')
-else:
-    print('false')
+import conjugation
+import tkinter as tk
+from tkinter import ttk
+from tkinter import font
+
+def functie():
+    print("hallo")
+    #if vervoeging_entry.get() == "hallo":
+    #    answer.set("goed")
+    #else:
+    #    answer.set("fout")
+
+root = tk.Tk()
+
+root.title("Practise Spanish")
+width = 1000 # root.winfo_screenwidth()
+height = 800 # root.winfo_screenheight()
+root.geometry("%dx%d" % (width, height))
+
+frame = ttk.Frame(root, padding="3 3 12 12")
+frame.grid(column=0, row=0, sticky='nwes')
+frame.option_add('*Font', '20')
+
+vervoeging_entry = tk.StringVar()
+entry = ttk.Entry(frame, width=20, font=font.Font(size=20), textvariable=vervoeging_entry)
+entry.grid(column=4, row=2, sticky=('we'))
+entry.focus()
+root.bind("<Return>", functie())
+
+answer = tk.StringVar()
+ttk.Label(frame, font=font.Font(size=20), textvariable=answer).grid(column=4, row=3, sticky='w')
+
+root.mainloop()
+
 
 """
 from tkinter import *
@@ -49,81 +79,3 @@ ttk.Button(win, text= "Click to Show", command= get_data).place(relx= .7, rely= 
 
 win.mainloop()
 """
-
-import pandas as pd
-import random
-
-class quiz_input():
-
-    def __init__(self):
-        #Reading the base documents for the conjugations
-        self.tab_verbos = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="verbos")
-        self.tab_termina = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="terminación_estándar")
-        self.tab_irregula = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="irregularidades")
-        #Meaning of the abbreviations: pret = preterito, imp = imperfecto, indef = indefenido, pres = presente, subj = subjuntivo, neg = negativo
-        self.tiempos = ['presente', 'gerundio', 'perfecto', 'pret_imp', 'pret_indef', 'pres_subj', 'imp_subj', 'futuro', 'condicional', 'imperativo', 'imperativo_neg']
-        self.personas = ['1s', '2s', '3s', '1m', '2m', '3m']
-        #First person singular does not exist for imperativo
-        self.personas_imperativo = ['2s', '3s', '1m', '2m', '3m']
-        #Create list of possible combinations of tenses and pronounces in which exist irregularities
-        self.tiempos_personales_irregulares = list(self.tab_irregula['tiempo'] + self.tab_irregula['pers'].fillna(''))
-
-
-    def selection(self, n):
-        #Selection of n verb conjugations
-        verbo = random.choices(self.tab_verbos['verbos'].tolist(), k=n)
-        tiempo = random.choices(self.tiempos, k=n)
-        selection = pd.DataFrame({'verbo': verbo, 'tiempo': tiempo})
-        #choose the right pronounce for the tenses (first person singular does not exist for imperativo)
-        selection['persona'] = selection['tiempo'].apply(lambda x: random.choice(self.personas_imperativo) if 'imperativo' in x else random.choice(self.personas))
-        return selection
-
-
-    def derive_raiz(self, v, t):
-        if (t == 'futuro') | (t == 'condicional'):
-            raiz = self.get_irregularity(v, 'raiz_futuro', '') if self.irregularity_check(v, 'raiz_futuro', '') else v
-        elif t == "pres_subj":
-            raiz = self.get_irregularity(v, 'raiz_pres_subj', '') if self.irregularity_check(v, 'raiz_pres_subj', '') else v[:-2]
-        elif t == "imp_subj":
-            raiz = self.get_irregularity(v, 'raiz_imp_subj', '') if self.irregularity_check(v, 'raiz_imp_subj', '') else v[:-2]
-        else:
-            raiz = v[:-2]
-        return raiz
-
-
-    def get_terminacion(self, term_inf, t, p):
-        return self.tab_termina.loc[(self.tab_termina['tiempo'] == t) & (self.tab_termina['pers'] == p), term_inf].item()
-
-
-    def irregularity_check(self, v, t, p):
-        if (t + p in self.tiempos_personales_irregulares):
-            if pd.notnull(self.get_irregularity(v, t, p)):
-                return True
-            else:
-                return False
-        else:
-            return False
-
-
-    def get_irregularity(self, v, t, p):
-        return self.tab_irregula.loc[(self.tab_irregula['tiempo'] == t) & (self.tab_irregula['pers'].fillna('') == p), v].item()
-
-
-    def add_gerundio(self, v):
-        if self.irregularity_check(v, 'gerundio', ''):
-            return self.get_irregularity(v, 'gerundio', '')
-        else:
-            if v[-2:] == 'ar':
-                return v[:-2] + 'ando'
-            else:
-                return v[:-2] + 'iendo'
-
-
-    def add_participio(self,v):
-        if self.irregularity_check(v, 'perfecto', ''):
-            return self.get_irregularity(v, 'perfecto', '')
-        else:
-            if v[-2:] == 'ar':
-                return v[:-2] + 'ado'
-            else:
-                return v[:-2] + 'ido'
