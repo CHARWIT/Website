@@ -8,10 +8,10 @@ class quiz_input():
         #Meaning of possible abbreviations:
         # pret = preterito, imp = imperfecto, indef = indefenido, pres = presente, subj = subjuntivo, neg = negativo
         # s = singular, m = plural
-        self.tab_verbos = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="verbos")
-        self.tab_termina = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="terminación_estándar")
-        self.tab_irregula = pd.read_excel("C:\\Users\\Admin\\Documents\\Nils\\input_spaanse_vervoegingen.xlsx", sheet_name="irregularidades")
-        self.tiempos = ['presente', 'gerundio', 'perfecto', 'imperfecto', 'indefinido', 'presente_subjuntivo', 'imperfecto_subjuntivo', 'futuro', 'condicional', 'imperativo', 'imperativo_negativo']
+        self.tab_verbos = pd.read_excel("input_spaanse_vervoegingen.xlsx", sheet_name="verbos")
+        self.tab_termina = pd.read_excel("input_spaanse_vervoegingen.xlsx", sheet_name="terminación_estándar")
+        self.tab_irregula = pd.read_excel("input_spaanse_vervoegingen.xlsx", sheet_name="irregularidades")
+        self.tiempos = ['presente', 'gerundio', 'perfecto', 'imperfecto', 'indefinido', 'presente_subjuntivo', 'futuro', 'condicional', 'imperativo'] #, 'imperfecto_subjuntivo', 'imperativo_negativo'
         self.personas = ['1s', '2s', '3s', '1m', '2m', '3m']
         #First person singular does not exist for imperativo
         self.personas_imperativo = ['2s', '2m'] #['2s', '3s', '1m', '2m', '3m']

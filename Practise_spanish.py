@@ -79,9 +79,9 @@ class quiz(tk.Frame):
         for i in range(self.noq):
             print(self.df_sel['conjuga'][i])
             if self.answers[i].get() == self.df_sel['conjuga'][i]:
-                ttk.Label(self.frame, text='Goed!').grid(column=4, row=i+3, sticky='we')
+                ttk.Label(self.frame, text='Goed!').grid(row=i+3, column=4, sticky='we')
             else:
-                ttk.Label(self.frame, text='').grid(column=4, row=i+3, sticky='we')
+                ttk.Label(self.frame, text='Fout').grid(row=i+3, column=4, sticky='we')
 
 
     def start_over(self):
